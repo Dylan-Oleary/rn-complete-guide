@@ -1,21 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from "react";
+import { Button, FlatList, StyleSheet, View } from "react-native";
+
+import { GoalInput, GoalItem } from "./components";
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    const [isAddMode, setIsAddMode] = useState<boolean>(false);
+    const [goals, setGoals] = useState<Array<{ id: string; value: string }>>([]);
+
+    const addGoal: (value: string) => void = (value) => {
+        setGoals([...goals, { id: Math.random().toString(), value }]);
+        setIsAddMode(false);
+    };
+
+    const onRemoveGoal: (removeId: string) => void = (removeId) => {
+        setGoals((goals) => goals.filter(({ id }) => id !== removeId));
+    };
+
+    return (
+        <View style={styles.screen}>
+            <GoalInput onAddGoal={addGoal} onClear={() => setGoals([])} isAddMode={isAddMode} />
+            <Button title="Add New Goal" onPress={() => setIsAddMode(true)} />
+            <FlatList
+                data={goals}
+                renderItem={(goal) => <GoalItem goal={goal.item} onRemoveGoal={onRemoveGoal} />}
+            ></FlatList>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    screen: {
+        padding: 50
+    }
 });
